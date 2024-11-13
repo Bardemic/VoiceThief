@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">VoiceThief</h1>
+            <p class="text-gray-600">AI Powered Voice Cloning</p>
+        </header>
+
+        <div class="max-w-2xl mx-auto">
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <h2 class="text-2xl font-semibold mb-4">Start "Call"</h2>
+                <div class="flex flex-wrap gap-4">
+                    <input 
+                        type="tel" 
+                        id="phoneNumber" 
+                        placeholder="Enter phone number" 
+                        class="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                    <input 
+                        type="text" 
+                        id="name" 
+                        placeholder="Enter full name for consent purposes" 
+                        class="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                    <input 
+                        type="email" 
+                        id="email" 
+                        placeholder="Enter email for consent purposes" 
+                        class="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                    <button 
+                        onclick="makeCall()" 
+                        class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+                    >
+                        Make Call
+                    </button>
+                </div>
+                <div id="callStatus" class="mt-4 text-gray-600"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function makeCall() {
+            const phoneNumber = document.getElementById('phoneNumber').value;
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            if (!phoneNumber || !name || !email) {
+                alert('Please enter all fields');
+                return;
+            }
+
+            const statusDiv = document.getElementById('callStatus');
+            statusDiv.textContent = 'starting call';
+            
+            try {
+                const response = await fetch(`http://localhost:8080/make-call`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ phone_number: phoneNumber, name: name, email: email })
+                });
+                
+                const data = await response.json();
+                statusDiv.textContent = `call SID: ${data.call_sid}`;
+            } catch (error) {
+                statusDiv.textContent = `Error: ${error.message}`;
+                console.error('Error:', error);
+            }
+        }
+    </script>
+</body>
+</html>
